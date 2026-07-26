@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import orgRoutes from './routes/orgRoutes.js'
+import invitationRoutes from "./routes/invitationRoutes.js";
 
 
 const app = express();
@@ -12,8 +13,9 @@ app.use(cookieParser());
 
 
 app.use("/api/auth", authRoutes);
-console.log("Org routes loaded");
 app.use("/api/orgs", orgRoutes)
+console.log("Invitation routes loaded");
+app.use("/api", invitationRoutes)
 
 
 
