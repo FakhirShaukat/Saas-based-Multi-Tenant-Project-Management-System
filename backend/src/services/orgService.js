@@ -21,4 +21,21 @@ export const createOrganization = async ({
 
 
     return organization;
+
+};
+
+
+export const getUserOrganizations = async (userId) => {
+
+    const memberships = await Membership.find({
+        user: userId
+    })
+    .populate({
+        path: "organization",
+        select: "name plan subscriptionStatus"
+    });
+
+
+    return memberships;
+
 };
