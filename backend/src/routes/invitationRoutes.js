@@ -1,16 +1,9 @@
 import express from "express";
-import {
-    inviteMember
-} from "../controllers/invitationController.js";
-
+import {acceptInvite, inviteMember} from "../controllers/invitationController.js";
 import protect from "../middleware/authMiddleware.js";
-import {
-    checkOrgMembership
-} from "../middleware/orgMiddleware.js";
-
-import {
-    authorizeRoles
-} from "../middleware/roleMiddleware.js";
+import {checkOrgMembership} from "../middleware/orgMiddleware.js";
+import {authorizeRoles} from "../middleware/roleMiddleware.js";
+import { acceptInvitation } from "../services/invitationService.js";
 
 
 const router = express.Router();
@@ -24,5 +17,10 @@ router.post(
     inviteMember
 );
 
+router.post(
+    "/invitations/:token/accept",
+    protect,
+    acceptInvite
+);
 
 export default router;
