@@ -4,7 +4,7 @@ import authRoutes from "./routes/authRoutes.js";
 import orgRoutes from './routes/orgRoutes.js'
 import invitationRoutes from "./routes/invitationRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
-
+import projectRoutes from "./routes/projectRoutes.js"
 
 const app = express();
 
@@ -18,6 +18,7 @@ app.use("/api/orgs", orgRoutes)
 console.log("Invitation routes loaded");
 app.use("/api", invitationRoutes);
 app.use("/api", memberRoutes);
+app.use("/api", projectRoutes)
 
 
 
