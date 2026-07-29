@@ -5,6 +5,7 @@ import orgRoutes from './routes/orgRoutes.js'
 import invitationRoutes from "./routes/invitationRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js"
+import taskRoutes from "./routes/taskRoutes.js"
 
 const app = express();
 
@@ -12,13 +13,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-
 app.use("/api/auth", authRoutes);
 app.use("/api/orgs", orgRoutes)
-console.log("Invitation routes loaded");
 app.use("/api", invitationRoutes);
 app.use("/api", memberRoutes);
 app.use("/api", projectRoutes)
+app.use("/api", taskRoutes)
 
 
 
