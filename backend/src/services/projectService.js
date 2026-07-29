@@ -1,4 +1,5 @@
 import Project from "../models/Project.js";
+import { createActivity } from "./activityService.js";
 
 
 export const createProject = async ({
@@ -15,11 +16,34 @@ export const createProject = async ({
 
         description,
 
-        organization:organizationId,
+        organization:
+            organizationId,
 
-        createdBy:userId
+        createdBy:
+            userId
 
     });
+
+
+
+    await createActivity({
+
+        organizationId,
+
+        userId,
+
+        action: "created",
+
+        entityType: "project",
+
+        entityId:
+            project._id,
+
+        description:
+            `Created project "${project.name}"`
+
+    });
+
 
 
     return project;
@@ -33,10 +57,10 @@ export const getOrganizationProjects = async (
     const projects = await Project.find({
         organization: organizationId
     })
-    .populate({
-        path:"createdBy",
-        select:"name email avatar"
-    });
+        .populate({
+            path: "createdBy",
+            select: "name email avatar"
+        });
 
 
     return projects;
@@ -54,7 +78,7 @@ export const updateProject = async ({
     );
 
 
-    if(!project){
+    if (!project) {
 
         throw new Error(
             "Project not found"
@@ -85,7 +109,7 @@ export const deleteProject = async (
     );
 
 
-    if(!project){
+    if (!project) {
 
         throw new Error(
             "Project not found"

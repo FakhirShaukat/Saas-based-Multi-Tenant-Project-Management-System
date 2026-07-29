@@ -6,6 +6,7 @@ import invitationRoutes from "./routes/invitationRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js"
 import taskRoutes from "./routes/taskRoutes.js"
+import activityRoutes from "./routes/activityRoutes.js"
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api", invitationRoutes);
 app.use("/api", memberRoutes);
 app.use("/api", projectRoutes)
 app.use("/api", taskRoutes)
+app.use("/api", activityRoutes)
 
 
 
