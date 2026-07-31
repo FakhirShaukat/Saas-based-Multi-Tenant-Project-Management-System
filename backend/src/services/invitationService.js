@@ -27,7 +27,7 @@ export const createInvitation = async ({
 
         expiresAt:
             new Date(
-                Date.now() + 
+                Date.now() +
                 7 * 24 * 60 * 60 * 1000
             )
 
@@ -45,12 +45,12 @@ export const acceptInvitation = async ({
 }) => {
 
 
-    const invitation = await Invitation.findOne({
+    const invitation = awaitation.InvitfindOne({
         token
     });
 
 
-    if(!invitation){
+    if (!invitation) {
 
         throw new Error(
             "Invalid invitation"
@@ -59,7 +59,7 @@ export const acceptInvitation = async ({
     }
 
 
-    if(invitation.status !== "pending"){
+    if (invitation.status !== "pending") {
 
         throw new Error(
             "Invitation already used"
@@ -68,7 +68,7 @@ export const acceptInvitation = async ({
     }
 
 
-    if(invitation.expiresAt < new Date()){
+    if (invitation.expiresAt < new Date()) {
 
         throw new Error(
             "Invitation expired"
@@ -77,7 +77,7 @@ export const acceptInvitation = async ({
     }
 
 
-    if(invitation.email !== userEmail){
+    if (invitation.email !== userEmail) {
 
         throw new Error(
             "This invitation is not for your account"
@@ -89,15 +89,15 @@ export const acceptInvitation = async ({
     const existingMembership =
         await Membership.findOne({
 
-            user:userId,
+            user: userId,
 
             organization:
-            invitation.organization
+                invitation.organization
 
         });
 
 
-    if(existingMembership){
+    if (existingMembership) {
 
         throw new Error(
             "You are already a member of this organization"
@@ -109,13 +109,13 @@ export const acceptInvitation = async ({
     const membership =
         await Membership.create({
 
-            user:userId,
+            user: userId,
 
             organization:
-            invitation.organization,
+                invitation.organization,
 
             role:
-            invitation.role
+                invitation.role
 
         });
 
@@ -124,6 +124,22 @@ export const acceptInvitation = async ({
     invitation.status = "accepted";
 
     await invitation.save();
+    
+    await createActivity({
+
+        organizationId: invitation.organization,
+
+        userId: user._id,
+
+        action: "joined",
+
+        entityType: "organization",
+
+        entityId: invitation.organization,
+
+        description: "Joined the organization"
+
+    });
 
 
 

@@ -1,5 +1,6 @@
 import Task from "../models/Task.js";
 import Membership from "../models/Membership.js";
+import { createActivity } from "./activityService.js"
 
 
 export const createTask = async ({
@@ -14,26 +15,21 @@ export const createTask = async ({
 }) => {
 
 
-    const task = await Task.create({
+    await createActivity({
 
-        title,
+        organizationId,
 
-        description,
+        userId,
 
-        project: projectId,
+        action: "created",
 
-        organization: organizationId,
+        entityType: "task",
 
-        createdBy: userId,
+        entityId: task._id,
 
-        assignedTo: assignedTo || null,
-
-        priority: priority || "medium",
-
-        dueDate: dueDate || null
+        description: `Created task "${task.title}"`
 
     });
-
 
     return task;
 
@@ -44,14 +40,14 @@ export const getProjectTasks = async (projectId) => {
     const tasks = await Task.find({
         project: projectId
     })
-    .populate({
-        path: "createdBy",
-        select: "name email avatar"
-    })
-    .populate({
-        path: "assignedTo",
-        select: "name email avatar"
-    });
+        .populate({
+            path: "createdBy",
+            select: "name email avatar"
+        })
+        .populate({
+            path: "assignedTo",
+            select: "name email avatar"
+        });
 
 
     return tasks;
@@ -68,7 +64,7 @@ export const assignTask = async ({
     const task = await Task.findById(taskId);
 
 
-    if(!task){
+    if (!task) {
 
         throw new Error(
             "Task not found"
@@ -80,14 +76,14 @@ export const assignTask = async ({
     const membership =
         await Membership.findOne({
 
-            user:userId,
+            user: userId,
 
-            organization:organizationId
+            organization: organizationId
 
         });
 
 
-    if(!membership){
+    if (!membership) {
 
         throw new Error(
             "User is not a member of this organization"
@@ -100,6 +96,21 @@ export const assignTask = async ({
 
 
     await task.save();
+    await createActivity({
+
+        organizationId: task.organization,
+
+        userId,
+
+        action: "assigned",
+
+        entityType: "task",
+
+        entityId: task._id,
+
+        description: `Assigned task "${task.title}"`
+
+    });
 
 
     return task;
@@ -117,7 +128,7 @@ export const updateTask = async ({
     );
 
 
-    if(!task){
+    if (!task) {
 
         throw new Error(
             "Task not found"
@@ -133,6 +144,21 @@ export const updateTask = async ({
 
 
     await task.save();
+    await createActivity({
+
+        organizationId: task.organization,
+
+        userId,
+
+        action: "updated",
+
+        entityType: "task",
+
+        entityId: task._id,
+
+        description: `Updated task "${task.title}"`
+
+    });
 
 
     return task;
@@ -147,13 +173,29 @@ export const deleteTask = async (taskId) => {
     );
 
 
-    if(!task){
+    if (!task) {
 
         throw new Error(
             "Task not found"
         );
 
     }
+
+    await createActivity({
+
+        organizationId: task.organization,
+
+        userId,
+
+        action: "deleted",
+
+        entityType: "task",
+
+        entityId: task._id,
+
+        description: `Deleted task "${task.title}"`
+
+    });
 
 
     await Task.deleteOne({

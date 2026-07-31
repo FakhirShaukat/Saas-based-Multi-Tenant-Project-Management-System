@@ -6,10 +6,10 @@ export const getOrganizationMembers = async (organizationId) => {
     const members = await Membership.find({
         organization: organizationId
     })
-    .populate({
-        path: "user",
-        select: "name email avatar"
-    });
+        .populate({
+            path: "user",
+            select: "name email avatar"
+        });
 
     return members;
 
@@ -32,7 +32,7 @@ export const updateMemberRole = async ({
     });
 
 
-    if(!membership){
+    if (!membership) {
 
         throw new Error(
             "Member not found"
@@ -41,7 +41,7 @@ export const updateMemberRole = async ({
     }
 
 
-    if(membership.role === "owner"){
+    if (membership.role === "owner") {
 
         throw new Error(
             "Owner role cannot be changed"
@@ -53,6 +53,21 @@ export const updateMemberRole = async ({
     membership.role = role;
 
     await membership.save();
+    await createActivity({
+
+        organizationId,
+
+        userId: performedBy,
+
+        action: "updated",
+
+        entityType: "member",
+
+        entityId: membership._id,
+
+        description: `Changed member role to ${role}`
+
+    });
 
     return membership;
 
@@ -75,7 +90,7 @@ export const removeMember = async ({
     });
 
 
-    if(!membership){
+    if (!membership) {
 
         throw new Error(
             "Member not found"
@@ -84,7 +99,7 @@ export const removeMember = async ({
     }
 
 
-    if(membership.role === "owner"){
+    if (membership.role === "owner") {
 
         throw new Error(
             "Owner cannot be removed"
@@ -92,6 +107,21 @@ export const removeMember = async ({
 
     }
 
+    await createActivity({
+
+        organizationId,
+
+        userId: performedBy,
+
+        action: "removed",
+
+        entityType: "member",
+
+        entityId: membership._id,
+
+        description: "Removed a member from the organization"
+
+    });
 
     await Membership.deleteOne({
 
