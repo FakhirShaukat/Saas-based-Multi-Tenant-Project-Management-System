@@ -3,7 +3,9 @@ import {
     signup,
     login,
     logout,
-    getMe
+    getMe,
+    forgotPasswordController,
+    resetPasswordController
 } from "../controllers/authController.js";
 
 import protect from "../middleware/authMiddleware.js";
@@ -15,9 +17,9 @@ const router = express.Router();
 router.post("/signup", signup);
 
 router.post("/login", login);
-
-router.post("logout",logout)
-
+router.post("/forgot-password", forgotPasswordController);
+router.post("/reset-password/:token", resetPasswordController);
+router.post("/logout", logout);
 
 router.get(
     "/me",

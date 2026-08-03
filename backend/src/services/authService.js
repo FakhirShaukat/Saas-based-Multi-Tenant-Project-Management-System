@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import generateToken from "../utils/utilityToken.js";
+import crypto from "crypto";
+import { generateResetToken } from "../utils/generateUtilityToken.js";
+import { sendResetPasswordEmail } from "./emailService.js";
 
 
 export const signupUser = async ({ name, email, password }) => {
@@ -75,4 +78,81 @@ export const loginUser = async ({ email, password }) => {
         },
         token
     };
+};
+
+export const forgotPassword = async ({ email }) => {
+
+    const user = await User.findOne({ email });
+
+    // Prevent email enumeration
+    if (!user) {
+        return;
+    }
+
+    const {
+        resetToken,
+        hashedToken
+    } = generateResetToken();
+
+    user.passwordResetToken = hashedToken;
+
+    user.passwordResetExpires =
+        Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    const resetLink =
+        `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    await sendResetPasswordEmail(
+        user.email,
+        resetLink
+    );
+
+};
+
+export const resetPassword = async ({
+    token,
+    password
+}) => {
+
+    const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+
+    const user = await User.findOne({
+
+        passwordResetToken: hashedToken,
+
+        passwordResetExpires: {
+            $gt: Date.now()
+        }
+
+    });
+
+
+    if (!user) {
+
+        throw new Error(
+            "Invalid or expired reset token"
+        );
+
+    }
+
+
+    user.password = await bcrypt.hash(
+        password,
+        12
+    );
+
+
+    user.passwordResetToken = null;
+
+    user.passwordResetExpires = null;
+
+
+    await user.save();
+
 };

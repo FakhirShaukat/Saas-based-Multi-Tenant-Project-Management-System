@@ -1,8 +1,16 @@
-import { signupUser } from "../services/authService.js";
-import { signupSchema } from "../validators/authValidator.js";
-import { loginUser } from "../services/authService.js";
-import { loginSchema } from "../validators/authValidator.js";
+import {
+    signupUser,
+    loginUser,
+    forgotPassword,
+    resetPassword
+} from "../services/authService.js";
 
+import {
+    signupSchema,
+    loginSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema
+} from "../validators/authValidator.js";
 
 export const signup = async(req,res)=>{
 
@@ -83,6 +91,76 @@ export const login = async(req,res)=>{
         res.status(401).json({
             success:false,
             message:error.message
+        });
+
+    }
+
+};
+
+export const forgotPasswordController = async (req, res) => {
+
+    try {
+
+        const validatedData =
+            forgotPasswordSchema.parse(req.body);
+
+        await forgotPassword(validatedData);
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                "If an account with that email exists, a password reset link has been sent."
+
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+export const resetPasswordController = async (req, res) => {
+
+    try {
+
+        const validatedData =
+            resetPasswordSchema.parse(req.body);
+
+        await resetPassword({
+
+            token: req.params.token,
+
+            password: validatedData.password
+
+        });
+
+        res.status(200).json({
+
+            success: true,
+
+            message:
+                "Password reset successfully"
+
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+
+            success: false,
+
+            message: error.message
+
         });
 
     }
