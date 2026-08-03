@@ -1,4 +1,5 @@
 import React from 'react'
+import {assets} from '../assets/assets'
 import LogoBar from '../components/LogoBar'
 
 const ForgetPasswordPage = () => {
@@ -20,7 +21,11 @@ const ForgetPasswordPage = () => {
           <div className='sendEmail-btn text-center mt-4 '>
             <button className='bg-black p-3 w-full text-white rounded-md text-sm'>Reset Password</button>
           </div>
-          <div className='pt-4 text-xs text-center'> <a href="/" className='text-gray-400 font-inter '>Back to login</a></div>
+          <div className='pt-4 text-xs text-center'> 
+            <img src={assets.leftarrow} alt="" className='inline-block w-4 h-4 mr-2' />
+            
+            <a href="/" className='text-gray-400 font-inter '>Back to login</a>
+            </div>
 
         </div>
 
